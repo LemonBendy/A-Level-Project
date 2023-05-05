@@ -26,13 +26,13 @@ def is_valid_integer(text): # Validate integer
     return bool(re.search(r"^[0-9]+$", text))#
 
 def is_valid_float(text): # Validate float
-    return bool(re.search(r"^[0-9]+\.[0-9]+$", text)) # https://www.regextester.com/96683
+    return bool(re.search(r"^[0-9]+\.[0-9]+$", text)) 
 
 def is_valid_string(text): # Validate string
-    return bool(re.search(r"^[a-zA-Z0-9]+$", text)) # https://www.regextester.com/106421
+    return bool(re.search(r"^[a-zA-Z0-9]+$", text)) 
 
 def is_valid_date(text): # Validate date
     return bool(re.search(r"/^(?:31([/\-.])(?:0?[13578]|1[02])\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?"
                           r":1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|"
                           r"[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:"
-                          r"0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/gm", text)) # https://www.regextester.com/19
+                          r"0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/gm", text))

@@ -6,9 +6,10 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 from tkinter import *
+from tkinter import messagebox
 import sys
-import re
 import My_Validation
+import keyboard
 
 
 class LoginWindow: # Create a login window
@@ -18,6 +19,10 @@ class LoginWindow: # Create a login window
         self.window.geometry("400x300") # Set the window size
         self.window.resizable(0, 0)
         self.window.configure(bg="light blue") # Set the window background colour
+
+        #if user inputs enter key, run login function
+        if keyboard.is_pressed('enter'):
+            self.login()
 
         # Create a login form
         Label(window, text="Please enter login details below", bg="light blue").pack() # Create a label for the login form
@@ -33,14 +38,16 @@ class LoginWindow: # Create a login window
         self.password = StringVar()
 
         Label(window, text="Password: ", bg="light blue").pack() # Create a label for the password entry box
-        Entry(window, textvariable=self.password, show="No").pack() # Create an entry box for the password
+        Entry(window, textvariable=self.password, show="*").pack() # Create an entry box for the password
 
         Label(window, text="", bg="light blue").pack() # Create a space between the entry box and the login button
 
         # Login button
         Button(window, text="Login", width=10, height=1, command=self.login).pack() 
+
         #exit button
         Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).pack()
+
 
     def login(self): # Create a login function
         # Get username and password
@@ -49,22 +56,22 @@ class LoginWindow: # Create a login window
 
         # Check if username and password is valid
         if self.is_valid_username(username) and self.is_valid_password(password):
-            messagebox.showinfo("Login successful", "Welcome " + username)
+            messagebox.showinfo("Login info", "Welcome " + username + "!")
         else:
             messagebox.showerror("Login error", "Invalid username or password")
 
+    # Check if username is valid
     def is_valid_username(self, username):
-        # Check if username is valid
-        if My_Validation.is_valid_string(username):
-            return True
-        else:
+        try:
+            My_Validation.is_valid_string(username)
+        except:
             return False
         
+    # Check if password is valid
     def is_valid_password(self, password):
-        # Check if password is valid
-        if My_Validation.is_valid_string(password):
-            return True
-        else:
+        try:
+            My_Validation.is_valid_string(password)
+        except:
             return False
         
 # Create a window and pass it to the Application object
