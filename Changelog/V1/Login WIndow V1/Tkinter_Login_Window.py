@@ -4,12 +4,11 @@
 # Known Bugs: none                                                      #
 # Ideas to be added: auto selection of buttons so user can 'hit' enter  #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
+from V1\Face_Meshing\Mesh import *
 from tkinter import *
 from tkinter import messagebox
 import sys
 import My_Validation
-import keyboard
 
 
 class LoginWindow: # Create a login window
@@ -19,10 +18,6 @@ class LoginWindow: # Create a login window
         self.window.geometry("400x300") # Set the window size
         self.window.resizable(0, 0)
         self.window.configure(bg="light blue") # Set the window background colour
-
-        #if user inputs enter key, run login function
-        if keyboard.is_pressed('enter'):
-            self.login()
 
         # Create a login form
         Label(window, text="Please enter login details below", bg="light blue").pack() # Create a label for the login form
@@ -57,6 +52,7 @@ class LoginWindow: # Create a login window
         # Check if username and password is valid
         if self.is_valid_username(username) and self.is_valid_password(password):
             messagebox.showinfo("Login info", "Welcome " + username + "!")
+            Mesh.mesh()
         else:
             messagebox.showerror("Login error", "Invalid username or password")
 
