@@ -4,7 +4,6 @@
 # Known Bugs: none                                                      #
 # Ideas to be added: auto selection of buttons so user can 'hit' enter  #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-from V1\Face_Meshing\Mesh import *
 from tkinter import *
 from tkinter import messagebox
 import sys
