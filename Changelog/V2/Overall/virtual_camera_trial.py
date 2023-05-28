@@ -18,5 +18,18 @@ height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
 fps = video.get(cv2.CAP_PROP_FPS)
 
 with pyvirtualcam.CAmera(width, height, fps, fmt=PixelFormat.BGR, device=args.device, print_fps=args.fps) as cam:
-    print(f"Virtual camera device: {cam.device}")
+    print(f"Virtual camera device: {cam.device} ({cam.width}x{cam.height} @ {cam.fps}fps)")
+    count = 0
+    while True:
+        if count == length:
+            count = 0
+            video.set(cv2.CAP_PROP_POS_FRAMES, 0)
+
+        ret, frame = video.read()
+        if not ret:
+            raise RuntimeError("Error fetching frame")
+        
+        cam.send(frame)
+        cam.sleep_until_next_frame()
+        count += 1
     
