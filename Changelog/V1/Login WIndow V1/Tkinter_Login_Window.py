@@ -4,11 +4,40 @@
 # Known Bugs: none                                                      #
 # Ideas to be added: auto selection of buttons so user can 'hit' enter  #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+from V1\Face_Meshing\Mesh import *
 from tkinter import *
 from tkinter import messagebox
 import sys
 import My_Validation
+import sqlite3 as sq
+class database:
+    def __init__(self):
+        self.self = self
 
+    def create_table(self):
+        try:
+            conn = sq.connect("login.db")
+            c = conn.cursor()
+            c.execute("""CREATE TABLE IF NOT EXISTS login (
+                USERNAME        TEXT    PRIMARY KEY     NOT NULL,
+                PASSWORD        TEXT                    NOT NULL,
+                ADMIN_STATUS    BOOLEAN DEFAULT FALSE   NOT NULL""")
+            conn.commit()
+            conn.close()
+        except Exception() as e:
+            print(e)
+            return False
+l
+    def insert_data(self, username, password, admin_status=False):
+        try:
+            conn = sq.connect("login.db")
+            c = conn.cursor()
+            c.execute("INSERT INTO login VALUES (?,?,?)", (username, password, admin_status))
+            conn.commit()
+            conn.close()
+        except Exception() as e:
+            print(e)
+            return False 
 
 class LoginWindow: # Create a login window
     def __init__(self, window, window_title): # Initialise the login window
