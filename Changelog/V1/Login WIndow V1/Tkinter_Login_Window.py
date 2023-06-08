@@ -4,41 +4,80 @@
 # Known Bugs: none                                                      #
 # Ideas to be added: auto selection of buttons so user can 'hit' enter  #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-from V1\Face_Meshing\Mesh import *
+#from V1\Face_Meshing\Mesh import *
 from tkinter import *
 from tkinter import messagebox
 import sys
 import My_Validation
 import sqlite3 as sq
+
+
 class database:
     def __init__(self):
         self.self = self
 
-    def create_table(self):
+    def create_table():
         try:
-            conn = sq.connect("login.db")
+            conn = sq.connect("Changelog\V1\Login WIndow V1\login.db")
             c = conn.cursor()
-            c.execute("""CREATE TABLE IF NOT EXISTS login (
+            c.execute("""CREATE TABLE IF NOT EXISTS login(
                 USERNAME        TEXT    PRIMARY KEY     NOT NULL,
                 PASSWORD        TEXT                    NOT NULL,
-                ADMIN_STATUS    BOOLEAN DEFAULT FALSE   NOT NULL""")
+                ADMIN_STATUS    BOOLEAN DEFAULT FALSE   NOT NULL)""")
             conn.commit()
             conn.close()
-        except Exception() as e:
+        except Exception as e:
             print(e)
             return False
-l
-    def insert_data(self, username, password, admin_status=False):
+
+    def insert_data(username, password, admin_status=False):
         try:
-            conn = sq.connect("login.db")
+            conn = sq.connect("Changelog\V1\Login WIndow V1\login.db")
             c = conn.cursor()
             c.execute("INSERT INTO login VALUES (?,?,?)", (username, password, admin_status))
             conn.commit()
             conn.close()
-        except Exception() as e:
+        except Exception as e:
             print(e)
-            return False 
+            return False
 
+    def get_data(username):
+        try:
+            conn = sq.connect("Changelog\V1\Login WIndow V1\login.db")
+            c = conn.cursor()
+            c.execute("SELECT * FROM login WHERE USERNAME=?", (username,))
+            rows = c.fetchall()
+            conn.close()
+            return rows
+        except Exception as e:
+            print(e)
+            return False
+    #function to get password from database
+    def get_password(username):
+        try:
+            conn = sq.connect("Changelog\V1\Login WIndow V1\login.db")
+            c = conn.cursor()
+            c.execute("SELECT PASSWORD FROM login WHERE USERNAME=?", (username,))
+            rows = c.fetchall()
+            conn.close()
+            return rows[0][0]
+        except Exception as e:
+            print(e)
+            return False  
+        
+    #function to get admin status from database
+    def get_admin_status(username):
+        try:
+            conn = sq.connect("Changelog\V1\Login WIndow V1\login.db")
+            c = conn.cursor()
+            c.execute("SELECT ADMIN_STATUS FROM login WHERE USERNAME=?", (username,))
+            rows = c.fetchall()
+            conn.close()
+            return rows[0][0]
+        except Exception as e:
+            print(e)
+            return False
+    
 class LoginWindow: # Create a login window
     def __init__(self, window, window_title): # Initialise the login window
         self.window = window # Create a window
@@ -66,11 +105,14 @@ class LoginWindow: # Create a login window
         Label(window, text="", bg="light blue").pack() # Create a space between the entry box and the login button
 
         # Login button
-        Button(window, text="Login", width=10, height=1, command=self.login).pack() 
+        Button(window, text="Login", width=10, height=1, command=self.login).pack()
+        Button(window, text="Register", width=10, height=1, command=self.user_register).pack()
 
         #exit button
         Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).pack()
 
+    def user_register(self):
+        messagebox.showinfo("Register info", "Unable to create account, please contact your system administrator")
 
     def login(self): # Create a login function
         # Get username and password
@@ -78,11 +120,12 @@ class LoginWindow: # Create a login window
         password = self.password.get()
 
         # Check if username and password is valid
-        if self.is_valid_username(username) and self.is_valid_password(password):
-            messagebox.showinfo("Login info", "Welcome " + username + "!")
-            Mesh.mesh()
+        database.get_data(username)
+        if password == database.get_password(username):
+            messagebox.showinfo("Login info", "Login successful (user)")
         else:
-            messagebox.showerror("Login error", "Invalid username or password")
+            messagebox.showerror("Error", "Invalid username or password")
+
 
     # Check if username is valid
     def is_valid_username(self, username):
@@ -98,9 +141,51 @@ class LoginWindow: # Create a login window
         except:
             return False
         
+    # Create a register function    
+    def register(self):
+        self.window.destroy() #destroy login window
+        RegisterWindow(Tk(), "Tkinter Register Form") #create register window
+
+
+class RegisterWindow: # Create a register window
+    def __init__(self, window, window_title): # Initialise the register window
+        self.window = window # Create a window
+        self.window.title(window_title)
+        self.window.geometry("400x300") # Set the window size
+        self.window.resizable(0, 0)
+        self.window.configure(bg="light blue") # Set the window background colour
+
+        # Create a register form
+        Label(window, text="Please enter register details below", bg="light blue").pack() # Create a label for the register form
+        Label(window, text="", bg="light blue").pack() # Create a space between the label and the entry box
+
+        # Username
+        self.username = StringVar()
+
+        Label(window, text="Username: ", bg="light blue").pack() # Create a label for the username entry box
+        Entry(window, textvariable=self.username).pack() # Create an entry box for the username
+
+        # Password that encrypts
+        self.password = StringVar()
+
+        Label(window, text="Password: ", bg="light blue").pack() # Create a label for the password entry box
+        Entry(window, textvariable=self.password, show="*").pack() # Create an entry box for the password
+
+        Label(window, text="", bg="light blue").pack() # Create a space between the entry box and the login button
+
+        # Login button
+        Button(window, text="Register", width=10, height=1, command=self.register).pack()
+
+        #exit button
+        Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).pack()
+
+    def register(self): # Create a register function
+        pass
+
+
 # Create a window and pass it to the Application object
 LoginWindow(Tk(), "Tkinter Login Form")
-
+#RegisterWindow(Tk(), "Tkinter Register Form")
 # Run the mainloop
 mainloop()
 
