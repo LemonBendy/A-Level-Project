@@ -68,5 +68,5 @@ def mesh():
 
     cap.release()
 
-
-mesh()
+if __name__ == "__main__":
+    mesh()
