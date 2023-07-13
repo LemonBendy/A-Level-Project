@@ -14,14 +14,20 @@ from Mesh import mesh
 import requests
 
 
-def get_image():
-    url = 'https://thispersondoesnotexist.com/image'
-    response = requests.get(url)
-    if response.status_code == 200:
-        with open('image.jpg', 'wb') as f:
-            f.write(response.content)
-    else:
-        print('error')
+   # Check if username is valid
+def is_valid_username(username):
+    try:
+        My_Validation.is_valid_string(username)
+    except:
+        return False
+        
+    # Check if password is valid
+def is_valid_password(password):
+    try:
+        My_Validation.is_valid_string(password)
+    except:
+        return False
+        
 
 class database:
     def __init__(self):
@@ -81,7 +87,7 @@ class database:
         try:
             conn = sq.connect("Changelog\V1\Login WIndow V1\login.db")
             c = conn.cursor()
-            c.execute("SELECT ADMIN_STATUS FROM login WHERE USERNAME=?", (username))
+            c.execute("SELECT ADMIN_STATUS FROM login WHERE USERNAME=?", (username,))
             rows = c.fetchall()
             conn.close()
             return rows[0][0]
@@ -117,9 +123,8 @@ class LoginWindow: # Create a login window
         Label(window, text="", bg="light blue").pack() # Create a space between the entry box and the login button
 
        # login button, register button and exit button side by side
-        Button(window, text="Login", width=10, height=1, command=self.login).place(x=75, y=200)
-        Button(window, text="Register", width=10, height=1, command=self.register).place(x=175, y=200)
-        Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).place(x=275, y=200)
+        Button(window, text="Login", width=10, height=1, command=self.login).place(x=110, y=200)
+        Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).place(x=210, y=200)
 
     def user_register(self):
         messagebox.showinfo("Register info", "Unable to create account, please contact your system administrator")
@@ -132,28 +137,13 @@ class LoginWindow: # Create a login window
         # Check if username and password is valid
         database.get_data(username)
         if password == database.get_password(username):
-            messagebox.showinfo("Login info", "Login successful (user)")
-            self.window.destroy() #destroy login window
-            x = lambda: mesh() #create mesh window
-            x()
+            #check for admin status
+            if database.get_admin_status(username) == 1:
+                self.window.destroy()
+                AdminWindow(Tk(), "Tkinter Admin Form")
         else:
             messagebox.showerror("Error", "Invalid username or password")
 
-
-    # Check if username is valid
-    def is_valid_username(self, username):
-        try:
-            My_Validation.is_valid_string(username)
-        except:
-            return False
-        
-    # Check if password is valid
-    def is_valid_password(self, password):
-        try:
-            My_Validation.is_valid_string(password)
-        except:
-            return False
-        
     # Create a register function    
     def register(self):
         self.window.destroy() #destroy login window
@@ -193,7 +183,14 @@ class RegisterWindow: # Create a register window
         Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).pack()
 
     def register(self): # Create a register function
-        pass
+        # Get username and password
+        username = self.username.get()
+        password = self.password.get()
+
+        #put username and password into database
+        if is_valid_username(username) and is_valid_password(password):
+            database.insert_data(username, password)
+            messagebox.showinfo("Register info", "Account created successfully")
 
 
 class AdminWindow:
@@ -213,7 +210,8 @@ class AdminWindow:
         Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).pack()
 
     def create_account(self):
-        pass
+        RegisterWindow(Tk(), "Tkinter Register Form")
+
 
     def remove_account(self):
         pass
@@ -222,11 +220,10 @@ class AdminWindow:
 
 
 # Create a window and pass it to the Application object
-#LoginWindow(Tk(), "Tkinter Login Form")
+LoginWindow(Tk(), "Tkinter Login Form")
 #RegisterWindow(Tk(), "Tkinter Register Form")
 # AdminWindow(Tk(), "Tkinter Admin Form")
 # Run the mainloop
-#mainloop()
+mainloop()
 
-get_image()
 
