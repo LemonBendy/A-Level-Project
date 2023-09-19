@@ -122,17 +122,17 @@ class LoginWindow: # Create a login window
 
         Label(window, text="", bg="light blue").pack() # Create a space between the entry box and the login button
 
-<<<<<<< Updated upstream
+
        # login button, register button and exit button side by side
         Button(window, text="Login", width=10, height=1, command=self.login).place(x=110, y=200)
         Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).place(x=210, y=200)
-=======
+
         # Login button
         Button(window, text="Login", width=10, height=1, command=self.login).pack()
 
         #exit button
         Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).pack()
->>>>>>> Stashed changes
+
 
     def user_register(self):
         messagebox.showinfo("Register info", "Unable to create account, please contact your system administrator")
@@ -145,19 +145,17 @@ class LoginWindow: # Create a login window
         # Check if username and password is valid
         database.get_data(username)
         if password == database.get_password(username):
-<<<<<<< Updated upstream
             #check for admin status
             if database.get_admin_status(username) == 1:
                 self.window.destroy()
                 AdminWindow(Tk(), "Tkinter Admin Form")
-=======
+
             if database.get_admin_status(username) == True:
                 messagebox.showinfo("Login info", "Welcome Admin")
                 self.window.destroy()
             else:
                 messagebox.showinfo("Login info", "Welcome User")
                 self.window.destroy()
->>>>>>> Stashed changes
         else:
             messagebox.showerror("Error", "Invalid username or password")
 
