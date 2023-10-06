@@ -11,7 +11,6 @@ import sys
 import My_Validation
 import sqlite3 as sq
 from Mesh import mesh
-import requests
 
 
    # Check if username is valid
@@ -137,10 +136,13 @@ class LoginWindow: # Create a login window
         # Check if username and password is valid
         database.get_data(username)
         if password == database.get_password(username):
-            #check for admin status
+            # check for admin status
             if database.get_admin_status(username) == 1:
                 self.window.destroy()
                 AdminWindow(Tk(), "Tkinter Admin Form")
+            else:
+                self.window.destroy()
+                VariableWindow(Tk(), "Tkinter Variable Form")
         else:
             messagebox.showerror("Error", "Invalid username or password")
 
@@ -192,6 +194,30 @@ class RegisterWindow: # Create a register window
             database.insert_data(username, password)
             messagebox.showinfo("Register info", "Account created successfully")
 
+class VariableWindow:
+    def __init__(self, window, window_title):
+        self.window = window
+        self.windoww.title(window_title)
+        self.window.geometry("500x400")
+        self.window.resizable(0, 0)
+        self.window.configure(bg="light yellow")
+
+        Label(window, text="Edit the Face Tracking Variables here", bg="light yellow").pack()
+        Label(window, text="", bg="light yellow").pack()
+
+        # Face Tracking Variables
+        self.face_num = IntVar()
+        self.min_confidence = DoubleVar()
+        self.max_confidence = DoubleVar()
+
+        Label(window, text="Face Number: ", bg="light yellow").pack()
+        Scale(window, from_=1, to=5, orient=HORIZONTAL, variable=self.face_num).pack()
+
+        Label(window, text="Minimum Confidence: ", bg="light yellow").pack()
+        Scale(window, from_=0.0, to=1.0, orient=HORIZONTAL, resolution=0.1, variable=self.min_confidence).pack()
+
+        Label(window, text="Maximum Confidence: ", bg="light yellow").pack()
+        Scale(window, from_=0.0, to=1.0, orient=HORIZONTAL, resolution=0.1, variable=self.max_confidence).pack()
 
 class AdminWindow:
     def __init__(self, window, window_title):
