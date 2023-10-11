@@ -28,7 +28,7 @@ def is_valid_password(password):
         return False
         
 
-class database:
+class user_database:
     def __init__(self):
         self.self = self
 
@@ -39,7 +39,8 @@ class database:
             c.execute("""CREATE TABLE IF NOT EXISTS login(
                 USERNAME        TEXT    PRIMARY KEY     NOT NULL,
                 PASSWORD        TEXT                    NOT NULL,
-                ADMIN_STATUS    BOOLEAN DEFAULT FALSE   NOT NULL)""")
+                ADMIN_STATUS    BOOLEAN DEFAULT FALSE   NOT NULL
+                )""")
             conn.commit()
             conn.close()
         except Exception as e:
@@ -93,6 +94,17 @@ class database:
         except Exception as e:
             print(e)
             return False
+        
+    def insert_profile_values(face_num, min_confidence, max_confidence, username):
+        try:
+            conn = sq.connect("Changelog\V1\Login WIndow V1\login.db")
+            c = conn.cursor()
+            c.execute("INSERT INTO profile VALUES (?,?,?) WHERE USERNAME=?", (face_num, min_confidence, max_confidence), (username))
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            print(e)
+            return False
     
 class LoginWindow: # Create a login window
     def __init__(self, window, window_title): # Initialise the login window
@@ -126,12 +138,6 @@ class LoginWindow: # Create a login window
         Button(window, text="Login", width=10, height=1, command=self.login).place(x=110, y=200)
         Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).place(x=210, y=200)
 
-        # Login button
-        Button(window, text="Login", width=10, height=1, command=self.login).pack()
-
-        #exit button
-        Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).pack()
-
 
     def user_register(self):
         messagebox.showinfo("Register info", "Unable to create account, please contact your system administrator")
@@ -142,15 +148,15 @@ class LoginWindow: # Create a login window
         password = self.password.get()
 
         # Check if username and password is valid
-        database.get_data(username)
-        if password == database.get_password(username):
+        user_database.get_data(username)
+        if password == user_database.get_password(username):
             # check for admin status
-            if database.get_admin_status(username) == 1:
+            if user_database.get_admin_status(username) == 1:
                 self.window.destroy()
                 AdminWindow(Tk(), "Tkinter Admin Form")
             else:
                 self.window.destroy()
-                VariableWindow(Tk(), "Tkinter Variable Form")
+                VariableWindow(Tk(), "Tkinter Variable Form", username)
         else:
             messagebox.showerror("Error", "Invalid username or password")
 
@@ -199,13 +205,13 @@ class RegisterWindow: # Create a register window
 
         #put username and password into database
         if is_valid_username(username) and is_valid_password(password):
-            database.insert_data(username, password)
+            user_database.insert_data(username, password)
             messagebox.showinfo("Register info", "Account created successfully")
 
 class VariableWindow:
-    def __init__(self, window, window_title):
+    def __init__(self, window, window_title, username):
         self.window = window
-        self.windoww.title(window_title)
+        self.window.title(window_title)
         self.window.geometry("500x400")
         self.window.resizable(0, 0)
         self.window.configure(bg="light yellow")
@@ -217,15 +223,27 @@ class VariableWindow:
         self.face_num = IntVar()
         self.min_confidence = DoubleVar()
         self.max_confidence = DoubleVar()
+        self.username = username
 
         Label(window, text="Face Number: ", bg="light yellow").pack()
-        Scale(window, from_=1, to=5, orient=HORIZONTAL, variable=self.face_num).pack()
+        Scale(window, from_=1, to=5, orient=HORIZONTAL, relief=RAISED, variable=self.face_num).pack()
 
         Label(window, text="Minimum Confidence: ", bg="light yellow").pack()
         Scale(window, from_=0.0, to=1.0, orient=HORIZONTAL, resolution=0.1, variable=self.min_confidence).pack()
 
         Label(window, text="Maximum Confidence: ", bg="light yellow").pack()
         Scale(window, from_=0.0, to=1.0, orient=HORIZONTAL, resolution=0.1, variable=self.max_confidence).pack()
+
+        Label(window, text="", bg="light yellow").pack()
+        Button(window, text="Save", width=10, height=1, command=self.save()).pack()
+        
+    def save(self):
+        face_num = self.face_num.get()
+        min_confidence = self.min_confidence.get()
+        max_confidence = self.max_confidence.get()
+        username = LoginWindow.username.get()
+        user_database.insert_profile_values(face_num, min_confidence, max_confidence, username)
+            
 
 class AdminWindow:
     def __init__(self, window, window_title):
@@ -253,11 +271,11 @@ class AdminWindow:
 
 
 
-# Create a window and pass it to the Application object
-LoginWindow(Tk(), "Tkinter Login Form")
-#RegisterWindow(Tk(), "Tkinter Register Form")
+
+# LoginWindow(Tk(), "Tkinter Login Form")
+VariableWindow(Tk(), "Tkinter Variable Form", "ben") #test variable window
+# RegisterWindow(Tk(), "Tkinter Register Form")
 # AdminWindow(Tk(), "Tkinter Admin Form")
-# Run the mainloop
 mainloop()
 
 
