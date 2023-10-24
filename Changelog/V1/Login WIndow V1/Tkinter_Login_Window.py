@@ -59,12 +59,14 @@ class user_database:
             return False
 
     def get_data(username):
+        #print(username)
         try:
             conn = sq.connect("Changelog\V1\Login WIndow V1\login.db")
             c = conn.cursor()
             c.execute("SELECT * FROM login WHERE USERNAME=?", (username,))
             rows = c.fetchall()
             conn.close()
+            print(rows)
             return rows
         except Exception as e:
             print(e)
@@ -109,6 +111,7 @@ class user_database:
 class LoginWindow: # Create a login window
     def __init__(self, window, window_title): # Initialise the login window
         self.window = window # Create a window
+        self.username = ""
         self.window.title(window_title)
         self.window.geometry("400x300") # Set the window size
         self.window.resizable(0, 0)
@@ -146,7 +149,8 @@ class LoginWindow: # Create a login window
         # Get username and password
         username = self.username.get()
         password = self.password.get()
-
+        #print(username)
+        #print(password)
         # Check if username and password is valid
         user_database.get_data(username)
         if password == user_database.get_password(username):
@@ -272,8 +276,9 @@ class AdminWindow:
 
 
 
-# LoginWindow(Tk(), "Tkinter Login Form")
-VariableWindow(Tk(), "Tkinter Variable Form", "ben") #test variable window
+#LoginWindow(Tk(), "Tkinter Login Form")
+user_database.create_table()
+#VariableWindow(Tk(), "Tkinter Variable Form", "ben") #test variable window
 # RegisterWindow(Tk(), "Tkinter Register Form")
 # AdminWindow(Tk(), "Tkinter Admin Form")
 mainloop()
