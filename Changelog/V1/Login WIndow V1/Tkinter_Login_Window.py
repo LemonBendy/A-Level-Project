@@ -41,6 +41,7 @@ class user_database:
                 PASSWORD        TEXT                    NOT NULL,
                 ADMIN_STATUS    BOOLEAN DEFAULT FALSE   NOT NULL,
                 FACE_NUM        INT                     NOT NULL,
+                DISTANCE        INT                     NOT NULL,
                 )""")
             conn.commit()
             conn.close()
@@ -282,23 +283,20 @@ def create_table():
     try:
         conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
         c = conn.cursor()
-        c.execute("""CREATE TABLE IF NOT EXISTS login(
+        c.execute('''CREATE TABLE IF NOT EXISTS login(
             USERNAME        TEXT    PRIMARY KEY     NOT NULL,
             PASSWORD        TEXT                    NOT NULL,
-            ADMIN_STATUS    BOOLEAN DEFAULT FALSE   NOT NULL,
-            FACE_NUM        INT                     NOT NULL,
-            DISTANCE        INT                     NOT NULL,
-            )""")
+            ADMIN_STATUS    BOOLEAN DEFAULT FALSE   NOT NULL
+            )''')
         conn.commit()
         conn.close()
     except Exception as e:
         print(e)
         return False
-    
+
 create_table()
 
-
-#LoginWindow(Tk(), "Tkinter Login Form")   
+#LoginWindow(Tk(), "Tkinter Login Form")
 #VariableWindow(Tk(), "Tkinter Variable Form", "ben") #test variable window
 # RegisterWindow(Tk(), "Tkinter Register Form")
 # AdminWindow(Tk(), "Tkinter Admin Form")
