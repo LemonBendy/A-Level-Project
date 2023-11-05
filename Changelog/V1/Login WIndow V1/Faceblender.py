@@ -22,12 +22,12 @@ def similarityTransform(inPoints, outPoints):
   xin = c60*(inPts[0][0] - inPts[1][0]) - s60*(inPts[0][1] - inPts[1][1]) + inPts[1][0]
   yin = s60*(inPts[0][0] - inPts[1][0]) + c60*(inPts[0][1] - inPts[1][1]) + inPts[1][1]
 
-  inPts.append([np.int(xin), np.int(yin)])
+  inPts.append([np.int32(xin), np.int32(yin)])
 
   xout = c60*(outPts[0][0] - outPts[1][0]) - s60*(outPts[0][1] - outPts[1][1]) + outPts[1][0]
   yout = s60*(outPts[0][0] - outPts[1][0]) + c60*(outPts[0][1] - outPts[1][1]) + outPts[1][1]
 
-  outPts.append([np.int(xout), np.int(yout)])
+  outPts.append([np.int32(xout), np.int32(yout)])
 
   # Now we can use estimateRigidTransform for calculating the similarity transform.
   tform = cv2.estimateAffinePartial2D(np.array([inPts]), np.array([outPts]))
@@ -62,7 +62,7 @@ def calculateDelaunayTriangles(rect, points):
   triangleList = subdiv.getTriangleList()
 
   # Find the indices of triangles in the points array
-  delaunayTri = []
+  dTri = []
 
   for t in triangleList:
     # The triangle returned by getTriangleList is
@@ -88,9 +88,9 @@ def calculateDelaunayTriangles(rect, points):
             ind.append(k)
         # Store triangulation as a list of indices
       if len(ind) == 3:
-        delaunayTri.append((ind[0], ind[1], ind[2]))
+        dTri.append((ind[0], ind[1], ind[2]))
 
-  return delaunayTri
+  return dTri
 
 # Apply affine transform calculated using srcTri and dstTri to src and
 # output an image of size.

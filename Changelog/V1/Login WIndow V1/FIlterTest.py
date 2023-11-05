@@ -8,42 +8,14 @@ import csv
 VISUALIZE_FACE_POINTS = False
 
 filters_config = {
-    'anonymous':
-        [{'path': "filters/anonymous.png",
-          'anno_path': "filters/anonymous_annotations.csv",
-          'morph': True, 'animated': False, 'has_alpha': True}],
-    'anime':
-        [{'path': "filters/anime.png",
-          'anno_path': "filters/anime_annotations.csv",
-          'morph': True, 'animated': False, 'has_alpha': True}],
-    'dog':
-        [{'path': "filters/dog-ears.png",
-          'anno_path': "filters/dog-ears_annotations.csv",
-          'morph': False, 'animated': False, 'has_alpha': True},
-         {'path': "filters/dog-nose.png",
-          'anno_path': "filters/dog-nose_annotations.csv",
-          'morph': False, 'animated': False, 'has_alpha': True}],
     'cat':
-        [{'path': "filters/cat-ears.png",
-          'anno_path': "filters/cat-ears_annotations.csv",
+        [{'path': "Changelog/V1/Login WIndow V1/Filters/cat-ears.png",
+          'anno_path': "Changelog/V1/Login WIndow V1/Filters/cat-ears_annotations.csv",
           'morph': False, 'animated': False, 'has_alpha': True},
-         {'path': "filters/cat-nose.png",
-          'anno_path': "filters/cat-nose_annotations.csv",
-          'morph': False, 'animated': False, 'has_alpha': True}],
-    'jason-joker':
-        [{'path': "filters/jason-joker.png",
-          'anno_path': "filters/jason-joker_annotations.csv",
-          'morph': True, 'animated': False, 'has_alpha': True}],
-    'gold-crown':
-        [{'path': "filters/gold-crown.png",
-          'anno_path': "filters/gold-crown_annotations.csv",
-          'morph': False, 'animated': False, 'has_alpha': True}],
-    'flower-crown':
-        [{'path': "filters/flower-crown.png",
-          'anno_path': "filters/flower-crown_annotations.csv",
+         {'path': "Changelog/V1/Login WIndow V1/Filters/cat-nose.png",
+          'anno_path': "Changelog/V1/Login WIndow V1/Filters/cat-nose_annotations.csv",
           'morph': False, 'animated': False, 'has_alpha': True}],
 }
-
 
 # detect facial landmarks in image
 def getLandmarks(img):
@@ -60,7 +32,6 @@ def getLandmarks(img):
         results = face_mesh.process(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 
         if not results.multi_face_landmarks:
-            print('Face not detected!!!')
             return 0
 
         for face_landmarks in results.multi_face_landmarks:
@@ -313,3 +284,33 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
+###
+   # 'anonymous':
+   ##     [{'path': "filters/anonymous.png",
+   ###       'anno_path': "filters/anonymous_annotations.csv",
+   ####       'morph': True, 'animated': False, 'has_alpha': True}],
+   ##### 'anime':
+   ######     [{'path': "filters/anime.png",
+    ########      'anno_path': "filters/anime_annotations.csv",
+   #######       'morph': True, 'animated': False, 'has_alpha': True}],
+   ######### 'dog':
+   ##########     [{'path': "filters/dog-ears.png",
+   ############       'anno_path': "filters/dog-ears_annotations.csv",
+   ###########       'morph': False, 'animated': False, 'has_alpha': True},
+   #############      {'path': "filters/dog-nose.png",
+   ###############       'anno_path': "filters/dog-nose_annotations.csv",
+   ##############       'morph': False, 'animated': False, 'has_alpha': True}],
+  ##################  'jason-joker':
+  ################      [{'path': "filters/jason-joker.png",
+  #################        'anno_path': "filters/jason-joker_annotations.csv",
+  ###################        'morph': True, 'animated': False, 'has_alpha': True}],
+  #  'gold-crown':
+ ##       [{'path': "filters/gold-crown.png",
+  ###        'anno_path': "filters/gold-crown_annotations.csv",
+ ####         'morph': False, 'animated': False, 'has_alpha': True}],
+ #####   'flower-crown':
+######        [{'path': "filters/flower-crown.png",
+#######          'anno_path': "filters/flower-crown_annotations.csv",
+########          'morph': False, 'animated': False, 'has_alpha': True}],
+#########}
+###
