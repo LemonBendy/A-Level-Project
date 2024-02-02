@@ -34,7 +34,7 @@ class user_database:
 
     def create_table(): # Create a table in the database
         try:
-            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db") # Connect to the database
+            conn = sq.connect("Changelog\V1\Login WIndow V1\login.db") # Connect to the database
             c = conn.cursor() # Create a cursor
             c.execute("""CREATE TABLE IF NOT EXISTS login(
                 USERNAME        TEXT    PRIMARY KEY     NOT NULL,
@@ -50,7 +50,7 @@ class user_database:
 
     def insert_data(username, password, admin_status=False):
         try:
-            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
+            conn = sq.connect("Changelog\V1\Login WIndow V1/login.db")
             c = conn.cursor()
             c.execute("INSERT INTO login VALUES (?,?,?)", (username, password, admin_status))
             conn.commit()
@@ -61,7 +61,7 @@ class user_database:
         
     def insert_meshvalues(face_num, min_confidence, max_confidence):
         try:
-            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
+            conn = sq.connect("Changelog\V1\Login WIndow V1/login.db")
             c = conn.cursor()
             c.execute("INSERT INTO profile VALUES (?,?,?)", (face_num, min_confidence, max_confidence))
             conn.commit()
@@ -72,7 +72,7 @@ class user_database:
 
     def get_data(username):
         try:
-            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
+            conn = sq.connect("Changelog\V1\Login WIndow V1\login.db")
             c = conn.cursor()
             c.execute("SELECT * FROM login WHERE USERNAME=?", (username,))
             rows = c.fetchall()
@@ -84,7 +84,7 @@ class user_database:
     #function to get password from database
     def get_password(username):
         try:
-            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
+            conn = sq.connect("Changelog\V1\Login WIndow V1\login.db")
             c = conn.cursor()
             c.execute("SELECT PASSWORD FROM login WHERE USERNAME=?", (username,))
             rows = c.fetchall()
@@ -97,7 +97,7 @@ class user_database:
     #function to get admin status from database
     def get_admin_status(username):
         try:
-            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
+            conn = sq.connect("Changelog\V1\Login WIndow V1\login.db")
             c = conn.cursor()
             c.execute("SELECT ADMIN_STATUS FROM login WHERE USERNAME=?", (username,))
             rows = c.fetchall()
@@ -109,7 +109,7 @@ class user_database:
         
     def insert_profile_values(face_num, min_confidence, max_confidence, username):
         try:
-            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
+            conn = sq.connect("Changelog\V1\Login WIndow V1\login.db")
             c = conn.cursor()
             c.execute("INSERT INTO profile VALUES (?,?,?) WHERE USERNAME=?", (face_num, min_confidence, max_confidence), (username))
             conn.commit()
@@ -280,7 +280,7 @@ class AdminWindow:
 
 def create_table():
     try:
-        conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
+        conn = sq.connect("Changelog\V1\Login WIndow V1\login.db")
         c = conn.cursor()
         c.execute('''CREATE TABLE IF NOT EXISTS login(
             USERNAME        TEXT    PRIMARY KEY     NOT NULL,
@@ -295,7 +295,7 @@ def create_table():
 
 create_table()
 
-#LoginWindow(Tk(), "Tkinter Login Form")
+LoginWindow(Tk(), "Tkinter Login Form")
 #VariableWindow(Tk(), "Tkinter Variable Form", "ben") #test variable window
 # RegisterWindow(Tk(), "Tkinter Register Form")
 # AdminWindow(Tk(), "Tkinter Admin Form")
