@@ -32,20 +32,19 @@ class user_database:
     def __init__(self):
         self.self = self
 
-    def create_table():
+    def create_table(): # Create a table in the database
         try:
-            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
-            c = conn.cursor()
+            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db") # Connect to the database
+            c = conn.cursor() # Create a cursor
             c.execute("""CREATE TABLE IF NOT EXISTS login(
                 USERNAME        TEXT    PRIMARY KEY     NOT NULL,
                 PASSWORD        TEXT                    NOT NULL,
                 ADMIN_STATUS    BOOLEAN DEFAULT FALSE   NOT NULL,
-                FACE_NUM        INT                     NOT NULL,
-                DISTANCE        INT                     NOT NULL,
-                )""")
-            conn.commit()
-            conn.close()
-        except Exception as e:
+                FACE_NUM        INT     DEFAULT 1       NOT NULL,
+                )""") # Create a table in the database with fields, USERNAME, PASSWORD, ADMIN_STATUS and FACE_NUM
+            conn.commit() # Commit the changes
+            conn.close() # Close the connection
+        except Exception as e: # If there is an error, print the exception
             print(e)
             return False
 
