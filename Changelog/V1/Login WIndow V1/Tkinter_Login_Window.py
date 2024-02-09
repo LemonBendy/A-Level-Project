@@ -48,14 +48,15 @@ class user_database:
             print(e)
             return False
 
-    def insert_data(username, password, admin_status=False):
+    def insert_data(username, password, admin_status=False, face_num=1):
         try:
-            conn = sq.connect("Changelog\V1\Login WIndow V1/login.db")
-            c = conn.cursor()
+            conn = sq.connect("Changelog\V1\Login WIndow V1/login.db") # Connect to the database
+            c = conn.cursor() # Create a cursor
             c.execute("INSERT INTO login VALUES (?,?,?,?)", (username, password, admin_status, face_num))
-            conn.commit()
-            conn.close()
-        except Exception as e:
+           #^ inserts specified data from the parameters into the database
+            conn.commit() # commits the changes
+            conn.close() # closes the connection
+        except Exception as e: # IF error, print exception
             print(e)
             return False
         
