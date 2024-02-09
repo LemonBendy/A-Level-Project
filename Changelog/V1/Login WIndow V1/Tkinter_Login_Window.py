@@ -48,11 +48,11 @@ class user_database:
             print(e)
             return False
 
-    def insert_data(username, password, admin_status=False, face_num=1):
+    def insert_data(username, password, admin_status=False):
         try:
             conn = sq.connect("Changelog\V1\Login WIndow V1/login.db") # Connect to the database
             c = conn.cursor() # Create a cursor
-            c.execute("INSERT INTO login VALUES (?,?,?,?)", (username, password, admin_status, face_num))
+            c.execute("INSERT INTO login VALUES (?,?,?,?)", (username, password, admin_status)
            #^ inserts specified data from the parameters into the database
             conn.commit() # commits the changes
             conn.close() # closes the connection
