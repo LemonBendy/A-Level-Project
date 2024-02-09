@@ -52,7 +52,7 @@ class user_database:
         try:
             conn = sq.connect("Changelog\V1\Login WIndow V1/login.db")
             c = conn.cursor()
-            c.execute("INSERT INTO login VALUES (?,?,?, ?)", (username, password, admin_status, face_num))
+            c.execute("INSERT INTO login VALUES (?,?,?,?)", (username, password, admin_status, face_num))
             conn.commit()
             conn.close()
         except Exception as e:
