@@ -53,7 +53,7 @@ class DatabaseManager:
         except Exception as e:
             print(e)
             return False
-        
+
     def insert_meshvalues(face_num, min_confidence, max_confidence):
         try:
             conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
