@@ -160,7 +160,7 @@ def process_video(face_num):
             break
         else:
 
-            points2 = getLandmarks(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+            points2 = getLandmarks(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), face_num)
 
             # if face is partially detected
             if not points2 or (len(points2) != 75):
@@ -280,6 +280,8 @@ def process_video(face_num):
                 except:
                     iter_filter_keys = iter(filters_config.keys())
                     filters, multi_filter_runtime = load_filter(next(iter_filter_keys))
+            elif keypressed == 32:
+                cv2.imwrite("output.jpg", output)
 
             count += 1
 
@@ -287,7 +289,7 @@ def process_video(face_num):
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    process_video()
+    process_video(1)
 ###
    # 'anonymous':
    ##     [{'path': "filters/anonymous.png",

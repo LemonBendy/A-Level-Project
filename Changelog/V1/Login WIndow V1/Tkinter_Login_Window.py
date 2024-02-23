@@ -24,8 +24,8 @@ def is_valid_password(password: str) -> bool:
 
 
 class DatabaseManager:
-    """Handles operations that manage the database for the login windows"""
-    def __init__(self):
+    """Handles operations that manage the database for the login and admin windows"""
+    def __init__(self): # Create a connection to the database
         self.connection = sq.connect("Changelog/V1/Login WIndow V1/login.db")
         self.cursor = self.connection.cursor()
 
@@ -53,17 +53,7 @@ class DatabaseManager:
         except Exception as e:
             print(e)
             return False
-
-    def insert_meshvalues(face_num, min_confidence, max_confidence):
-        try:
-            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
-            c = conn.cursor()
-            c.execute("INSERT INTO profile VALUES (?,?,?)", (face_num, min_confidence, max_confidence))
-            conn.commit()
-            conn.close()
-        except Exception as e:
-            print(e)
-            return False
+        
 
     def get_data(self, username: str) -> list[any]:
         """Gets the data from the database"""
@@ -71,17 +61,20 @@ class DatabaseManager:
         rows = self.cursor.fetchall()
         return rows
 
+
     def get_password(self, username: str) -> str:
         """Gets the password hash from the database"""
         self.executeCommit("SELECT PASSWORD FROM login WHERE USERNAME=?", (username,))
         rows = self.cursor.fetchall()
         return rows[0][0]
 
+
     def is_admin(self, username: str) -> bool:
         """Returns a boolean for if the user is an admin or not"""
         self.executeCommit("SELECT ADMIN_STATUS FROM login WHERE USERNAME=?", (username,))
         rows = self.cursor.fetchall()
         return rows[0][0] == 1
+
 
     def insert_profile_values(self, face_num: int, username) -> None:
         """Inserts the profile values into the database"""
@@ -105,17 +98,17 @@ class LoginWindow:
         Label(window, text="", bg="light blue").pack()  # Create a space between the label and the entry box
 
         # Username
-
+        self.username = StringVar()
         Label(window, text="Username: ", bg="light blue").pack()  # Create a label for the username entry box
-        self.username = Entry(window, textvariable=self.username)  # Create an entry box for the username
-        self.username.pack()
+        Entry(window, textvariable=self.username).pack()  # Create an entry box for the username
+
 
         # Password that encrypts
         Label(window, text="", bg="light blue").pack()
-
+        self.password = StringVar()
         Label(window, text="Password: ", bg="light blue").pack()  # Create a label for the password entry box
-        self.password = Entry(window, textvariable=self.password, show="*")  # Create an entry box for the password
-        self.password.pack()
+        Entry(window, textvariable=self.password, show="*").pack()  # Create an entry box for the password
+        
 
         Label(window, text="", bg="light blue").pack()  # Create a space between the entry box and the login button
 
@@ -123,9 +116,11 @@ class LoginWindow:
         Button(window, text="Login", width=10, height=1, command=self.login).place(x=110, y=200)
         Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).place(x=210, y=200)
 
+
     def account_failed(self) -> None:
         """Shows a warning that the account could not be created"""
         messagebox.showinfo("Register info", "Unable to create account, please contact your system administrator")
+
 
     def login(self) -> None:
         """Checks the entered username and password against the database"""
@@ -143,6 +138,7 @@ class LoginWindow:
         else:
             self.window.destroy()
             VariableWindow(Tk(), "Tkinter Variable Form", username)
+
 
     # Create a register function
     def register(self) -> None:
@@ -181,6 +177,7 @@ class RegisterWindow:  # Create a register window
         # Exit button
         Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).pack()
 
+
     def register(self) -> None:
         """Registers the user"""
         # Get username and password
@@ -209,26 +206,21 @@ class VariableWindow:
 
         # Face Tracking Variables
         self.face_num = IntVar()
-        self.min_confidence = DoubleVar()
-        self.max_confidence = DoubleVar()
         self.username = username
 
         Label(window, text="Face Number: ", bg="light yellow").pack()
-        Scale(window, from_=1, to=5, orient=HORIZONTAL, relief=RAISED, variable=self.face_num).pack()
-
-        Label(window, text="Minimum Confidence: ", bg="light yellow").pack()
-        Scale(window, from_=0.0, to=1.0, orient=HORIZONTAL, resolution=0.1, variable=self.min_confidence).pack()
+        Scale(window, from_=1, to=5, orient=HORIZONTAL, variable=self.face_num).pack()
 
         Label(window, text="", bg="light yellow").pack()
         Button(window, text="Save", width=10, height=1, command=lambda: self.save(username)).pack()
 
+
     def save(self, username: str) -> None:
         face_num = self.face_num.get()
-        min_confidence = self.min_confidence.get()
-        print(face_num, min_confidence, username)
+        DatabaseManager.insert_profile_values(face_num, username)
+        print(face_num, username)
         self.window.destroy()
         process_video(face_num)
-        #user_database.insert_profile_values(face_num, min_confidence, max_confidence, username)
 
 
 class AdminWindow:
@@ -249,9 +241,11 @@ class AdminWindow:
         Button(window, text="Remove Account", width=10, height=1, command=self.remove_account).pack()
         Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).pack()
 
+
     def create_account(self) -> None:
         """Shows the 'create account' window"""
         RegisterWindow(Tk(), "Tkinter Register Form")
+
 
     def remove_account(self) -> None:
         ...
