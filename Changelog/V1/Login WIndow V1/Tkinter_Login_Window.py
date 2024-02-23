@@ -8,221 +8,182 @@
 from tkinter import *
 from tkinter import messagebox
 import sys
-import My_Validation
+import My_Validation as validation
 import sqlite3 as sq
-from Mesh import mesh
+from FilterTest import process_video
 
 
-   # Check if username is valid
-def is_valid_username(username):
-    try:
-        My_Validation.is_valid_string(username)
-    except:
-        return False
-        
-    # Check if password is valid
-def is_valid_password(password):
-    try:
-        My_Validation.is_valid_string(password)
-    except:
-        return False
-        
+def is_valid_username(username: str) -> bool:
+    """Checks if the username is valid (no special characters)"""
+    return validation.is_valid_string(username)
 
-class user_database:
+
+def is_valid_password(password: str) -> bool:
+    """Checks if the password is valid (no special characters)"""
+    return validation.is_valid_string(password)
+
+
+class DatabaseManager:
+    """Handles operations that manage the database for the login windows"""
     def __init__(self):
-        self.self = self
+        self.connection = sq.connect("Changelog/V1/Login WIndow V1/login.db")
+        self.cursor = self.connection.cursor()
 
-    def create_table():
-        try:
-            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
-            c = conn.cursor()
-            c.execute("""CREATE TABLE IF NOT EXISTS login(
-                USERNAME        TEXT    PRIMARY KEY     NOT NULL,
-                PASSWORD        TEXT                    NOT NULL,
-                ADMIN_STATUS    BOOLEAN DEFAULT FALSE   NOT NULL,
-                FACE_NUM        INT                     NOT NULL,
-                DISTANCE        INT                     NOT NULL,
-                )""")
-            conn.commit()
-            conn.close()
-        except Exception as e:
-            print(e)
-            return False
+    def executeCommit(self, query: str, *args: list[tuple[any]]) -> None:
+        """Executes a query and commits it"""
+        self.cursor.execute(query, *args)
+        self.connection.commit()
 
-    def insert_data(username, password, admin_status=False):
-        try:
-            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
-            c = conn.cursor()
-            c.execute("INSERT INTO login VALUES (?,?,?)", (username, password, admin_status))
-            conn.commit()
-            conn.close()
-        except Exception as e:
-            print(e)
-            return False
-        
-    def insert_meshvalues(face_num, min_confidence, max_confidence):
-        try:
-            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
-            c = conn.cursor()
-            c.execute("INSERT INTO profile VALUES (?,?,?)", (face_num, min_confidence, max_confidence))
-            conn.commit()
-            conn.close()
-        except Exception as e:
-            print(e)
-            return False
+    def create_table(self) -> None:
+        """Creates the table in the database, returns True if successful, False if not"""
+        self.executeCommit("""CREATE TABLE IF NOT EXISTS login(
+            USERNAME        TEXT    PRIMARY KEY     NOT NULL,
+            PASSWORD        TEXT                    NOT NULL,
+            ADMIN_STATUS    BOOLEAN DEFAULT FALSE   NOT NULL,
+            FACE_NUM        INT                     NOT NULL
+        )""")
 
-    def get_data(username):
-        try:
-            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
-            c = conn.cursor()
-            c.execute("SELECT * FROM login WHERE USERNAME=?", (username,))
-            rows = c.fetchall()
-            conn.close()
-            return rows
-        except Exception as e:
-            print(e)
-            return False
-    #function to get password from database
-    def get_password(username):
-        try:
-            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
-            c = conn.cursor()
-            c.execute("SELECT PASSWORD FROM login WHERE USERNAME=?", (username,))
-            rows = c.fetchall()
-            conn.close()
-            return rows[0][0]
-        except Exception as e:
-            print(e)
-            return False  
-        
-    #function to get admin status from database
-    def get_admin_status(username):
-        try:
-            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
-            c = conn.cursor()
-            c.execute("SELECT ADMIN_STATUS FROM login WHERE USERNAME=?", (username,))
-            rows = c.fetchall()
-            conn.close()
-            return rows[0][0]
-        except Exception as e:
-            print(e)
-            return False
-        
-    def insert_profile_values(face_num, min_confidence, max_confidence, username):
-        try:
-            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
-            c = conn.cursor()
-            c.execute("INSERT INTO profile VALUES (?,?,?) WHERE USERNAME=?", (face_num, min_confidence, max_confidence), (username))
-            conn.commit()
-            conn.close()
-        except Exception as e:
-            print(e)
-            return False
-    
-class LoginWindow: # Create a login window
-    def __init__(self, window, window_title): # Initialise the login window
-        self.window = window # Create a window
-        self.username = ""
+    def insert_data(self, username: str, password: str, admin_status: bool = False, face_num: int = 1) -> None:
+        """Inserts data into the database"""
+        self.executeCommit("INSERT INTO login VALUES (?,?,?,?)", (username, password, admin_status, face_num))
+
+    def insert_meshvalues(self, face_num: int) -> None:
+        """Inserts a user's face number into the database"""
+        self.executeCommit("INSERT INTO profile VALUES (?)", (face_num))
+
+    def get_data(self, username: str) -> list[any]:
+        """Gets the data from the database"""
+        self.executeCommit("SELECT * FROM login WHERE USERNAME=?", (username,))
+        rows = self.cursor.fetchall()
+        return rows
+
+    def get_password(self, username: str) -> str:
+        """Gets the password hash from the database"""
+        self.executeCommit("SELECT PASSWORD FROM login WHERE USERNAME=?", (username,))
+        rows = self.cursor.fetchall()
+        return rows[0][0]
+
+    def is_admin(self, username: str) -> bool:
+        """Returns a boolean for if the user is an admin or not"""
+        self.executeCommit("SELECT ADMIN_STATUS FROM login WHERE USERNAME=?", (username,))
+        rows = self.cursor.fetchall()
+        return rows[0][0] == 1
+
+    def insert_profile_values(self, face_num: int, username) -> None:
+        """Inserts the profile values into the database"""
+        self.executeCommit("INSERT INTO profile VALUES (?) WHERE USERNAME=?", (face_num,), (username))
+
+
+database = DatabaseManager()
+
+class LoginWindow:
+    """Creates a window for the user to log in"""
+    def __init__(self, window, window_title):
+        """Initialise the login window"""
+        self.window = window  # Create a window
         self.window.title(window_title)
-        self.window.geometry("400x300") # Set the window size
+        self.window.geometry("400x300")  # Set the window size
         self.window.resizable(0, 0)
-        self.window.configure(bg="light blue") # Set the window background colour
+        self.window.configure(bg="light blue")  # Set the window background colour
 
         # Create a login form
-        Label(window, text="Please enter login details below", bg="light blue").pack() # Create a label for the login form
-        Label(window, text="", bg="light blue").pack() # Create a space between the label and the entry box
+        Label(window, text="Please enter login details below", bg="light blue").pack()  # Create a label for the login form
+        Label(window, text="", bg="light blue").pack()  # Create a space between the label and the entry box
 
         # Username
-        self.username = StringVar()
 
-        Label(window, text="Username: ", bg="light blue").pack() # Create a label for the username entry box
-        Entry(window, textvariable=self.username).pack() # Create an entry box for the username
+        Label(window, text="Username: ", bg="light blue").pack()  # Create a label for the username entry box
+        self.username = Entry(window, textvariable=self.username)  # Create an entry box for the username
+        self.username.pack()
 
         # Password that encrypts
-        self.password = StringVar()
-        Label(window, text="", bg="light blue").pack() 
+        Label(window, text="", bg="light blue").pack()
 
-        Label(window, text="Password: ", bg="light blue").pack() # Create a label for the password entry box
-        Entry(window, textvariable=self.password, show="*").pack() # Create an entry box for the password
+        Label(window, text="Password: ", bg="light blue").pack()  # Create a label for the password entry box
+        self.password = Entry(window, textvariable=self.password, show="*")  # Create an entry box for the password
+        self.password.pack()
 
-        Label(window, text="", bg="light blue").pack() # Create a space between the entry box and the login button
+        Label(window, text="", bg="light blue").pack()  # Create a space between the entry box and the login button
 
-
-       # login button, register button and exit button side by side
+        # login button, register button and exit button side by side
         Button(window, text="Login", width=10, height=1, command=self.login).place(x=110, y=200)
         Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).place(x=210, y=200)
 
-
-    def user_register(self):
+    def account_failed(self) -> None:
+        """Shows a warning that the account could not be created"""
         messagebox.showinfo("Register info", "Unable to create account, please contact your system administrator")
 
-    def login(self): # Create a login function
+    def login(self) -> None:
+        """Checks the entered username and password against the database"""
         # Get username and password
         username = self.username.get()
         password = self.password.get()
         # Check if username and password is valid
-        user_database.get_data(username)
-        if password == user_database.get_password(username):
-            # check for admin status
-            if user_database.get_admin_status(username) == 1:
-                self.window.destroy()
-                AdminWindow(Tk(), "Tkinter Admin Form")
-            else:
-                self.window.destroy()
-                VariableWindow(Tk(), "Tkinter Variable Form", username)
-        else:
+        if password != database.get_password(username):
             messagebox.showerror("Error", "Invalid username or password")
+            return
+        # Check for admin status
+        if database.is_admin(username):
+            self.window.destroy()
+            AdminWindow(Tk(), "Tkinter Admin Form")
+        else:
+            self.window.destroy()
+            VariableWindow(Tk(), "Tkinter Variable Form", username)
 
-    # Create a register function    
-    def register(self):
-        self.window.destroy() #destroy login window
-        RegisterWindow(Tk(), "Tkinter Register Form") #create register window
+    # Create a register function
+    def register(self) -> None:
+        self.window.destroy()  # Destroy login window
+        RegisterWindow(Tk(), "Tkinter Register Form")  # Create register window
 
 
-class RegisterWindow: # Create a register window
-    def __init__(self, window, window_title): # Initialise the register window
-        self.window = window # Create a window
+class RegisterWindow:  # Create a register window
+    def __init__(self, window, window_title):
+        """Initialise the register window"""
+        self.window = window  # Create a window
         self.window.title(window_title)
-        self.window.geometry("400x300") # Set the window size
+        self.window.geometry("400x300")  # Set the window size
         self.window.resizable(0, 0)
-        self.window.configure(bg="light blue") # Set the window background colour
+        self.window.configure(bg="light blue")  # Set the window background colour
 
         # Create a register form
-        Label(window, text="Please enter register details below", bg="light blue").pack() # Create a label for the register form
-        Label(window, text="", bg="light blue").pack() # Create a space between the label and the entry box
+        Label(window, text="Please enter register details below", bg="light blue").pack()  # Create a label for the register form
+        Label(window, text="", bg="light blue").pack()  # Create a space between the label and the entry box
 
         # Username
-        self.username = StringVar()
+        Label(window, text="Username: ", bg="light blue").pack()  # Create a label for the username entry box
+        self.username = Entry(window)  # Create an entry box for the username
+        self.username.pack()
 
-        Label(window, text="Username: ", bg="light blue").pack() # Create a label for the username entry box
-        Entry(window, textvariable=self.username).pack() # Create an entry box for the username
+        # Password
+        Label(window, text="Password: ", bg="light blue").pack()  # Create a label for the password entry box
+        self.password = Entry(window, show="*")  # Create an entry box for the password
+        self.password.pack()
 
-        # Password that encrypts
-        self.password = StringVar()
-
-        Label(window, text="Password: ", bg="light blue").pack() # Create a label for the password entry box
-        Entry(window, textvariable=self.password, show="*").pack() # Create an entry box for the password
-
-        Label(window, text="", bg="light blue").pack() # Create a space between the entry box and the login button
+        Label(window, text="", bg="light blue").pack()  # Create a space between the entry box and the login button
 
         # Login button
         Button(window, text="Register", width=10, height=1, command=self.register).pack()
 
-        #exit button
+        # Exit button
         Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).pack()
 
-    def register(self): # Create a register function
+    def register(self) -> None:
+        """Registers the user"""
         # Get username and password
         username = self.username.get()
         password = self.password.get()
+        print(username, password)
 
-        #put username and password into database
-        if is_valid_username(username) and is_valid_password(password):
-            user_database.insert_data(username, password)
-            messagebox.showinfo("Register info", "Account created successfully")
+        # Check if username and password is valid
+
+        # Put username and password into database
+        database.insert_data(username, password, False, 1)
+        messagebox.showinfo("Register info", "Account created successfully")
+
 
 class VariableWindow:
     def __init__(self, window, window_title, username):
+        """Initialise the variable window"""
         self.window = window
         self.window.title(window_title)
         self.window.geometry("500x400")
@@ -246,23 +207,26 @@ class VariableWindow:
 
         Label(window, text="", bg="light yellow").pack()
         Button(window, text="Save", width=10, height=1, command=lambda: self.save(username)).pack()
-        
-    def save(self, username):
+
+    def save(self, username: str) -> None:
         face_num = self.face_num.get()
         min_confidence = self.min_confidence.get()
         print(face_num, min_confidence, username)
-        mesh(face_num, min_confidence)
+        self.window.destroy()
+        process_video(face_num)
         #user_database.insert_profile_values(face_num, min_confidence, max_confidence, username)
-            
+
 
 class AdminWindow:
+    """Shows a window with the admin specific UI"""
     def __init__(self, window, window_title):
+        """Initialise the admin window"""
         self.window = window
         self.window.title(window_title)
         self.window.geometry("400x300")
         self.window.resizable(0, 0)
         self.window.configure(bg="light blue")
-    
+
         # Title Admin Text
         Label(window, text="Admin", bg="magenta").pack()
 
@@ -271,35 +235,18 @@ class AdminWindow:
         Button(window, text="Remove Account", width=10, height=1, command=self.remove_account).pack()
         Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).pack()
 
-    def create_account(self):
+    def create_account(self) -> None:
+        """Shows the 'create account' window"""
         RegisterWindow(Tk(), "Tkinter Register Form")
 
+    def remove_account(self) -> None:
+        ...
 
-    def remove_account(self):
-        pass
 
-
-def create_table():
-    try:
-        conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
-        c = conn.cursor()
-        c.execute('''CREATE TABLE IF NOT EXISTS login(
-            USERNAME        TEXT    PRIMARY KEY     NOT NULL,
-            PASSWORD        TEXT                    NOT NULL,
-            ADMIN_STATUS    BOOLEAN DEFAULT FALSE   NOT NULL
-            )''')
-        conn.commit()
-        conn.close()
-    except Exception as e:
-        print(e)
-        return False
-
-create_table()
-
-#LoginWindow(Tk(), "Tkinter Login Form")
-#VariableWindow(Tk(), "Tkinter Variable Form", "ben") #test variable window
+LoginWindow(Tk(), "Tkinter Login Form")
+# VariableWindow(Tk(), "Tkinter Variable Form", "ben")  #test variable window
 # RegisterWindow(Tk(), "Tkinter Register Form")
 # AdminWindow(Tk(), "Tkinter Admin Form")
-#mainloop()
+mainloop()
 
 
