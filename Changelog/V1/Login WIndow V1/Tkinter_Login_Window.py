@@ -43,13 +43,27 @@ class DatabaseManager:
             FACE_NUM        INT                     NOT NULL
         )""")
 
-    def insert_data(self, username: str, password: str, admin_status: bool = False, face_num: int = 1) -> None:
-        """Inserts data into the database"""
-        self.executeCommit("INSERT INTO login VALUES (?,?,?,?)", (username, password, admin_status, face_num))
-
-    def insert_meshvalues(self, face_num: int) -> None:
-        """Inserts a user's face number into the database"""
-        self.executeCommit("INSERT INTO profile VALUES (?)", (face_num))
+    def insert_data(username, password, admin_status=False):
+        try:
+            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
+            c = conn.cursor()
+            c.execute("INSERT INTO login VALUES (?,?,?)", (username, password, admin_status))
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            print(e)
+            return False
+        
+    def insert_meshvalues(face_num, min_confidence, max_confidence):
+        try:
+            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
+            c = conn.cursor()
+            c.execute("INSERT INTO profile VALUES (?,?,?)", (face_num, min_confidence, max_confidence))
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            print(e)
+            return False
 
     def get_data(self, username: str) -> list[any]:
         """Gets the data from the database"""
