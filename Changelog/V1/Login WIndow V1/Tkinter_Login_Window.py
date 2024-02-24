@@ -117,11 +117,6 @@ class LoginWindow:
         Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).place(x=210, y=200)
 
 
-    def account_failed(self) -> None:
-        """Shows a warning that the account could not be created"""
-        messagebox.showinfo("Register info", "Unable to create account, please contact your system administrator")
-
-
     def login(self) -> None:
         """Checks the entered username and password against the database"""
         # Get username and password
