@@ -78,7 +78,7 @@ class DatabaseManager:
         """Hashes the password"""
         return hash(password)
     
-    def Delete(self, username: str) -> None:
+    def delete(self, username: str) -> None:
         """Deletes a user from the database"""
         if self.executeCommit("DELETE FROM login WHERE USERNAME=?", (username,)):
             messagebox.showinfo("Delete info", "Account deleted successfully")
