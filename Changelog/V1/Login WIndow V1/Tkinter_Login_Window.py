@@ -182,6 +182,12 @@ class RegisterWindow:  # Create a register window
         # Get username and password
         username = self.username.get()
         password = self.password.get()
+        if not is_valid_username(username):
+            messagebox.showerror("Register info", "Invalid username")
+            return
+        if not is_valid_password(password):
+            messagebox.showerror("Register info", "Invalid password")
+            return
         password = database.hash_function(password)
 
         # Check if username and password is valid

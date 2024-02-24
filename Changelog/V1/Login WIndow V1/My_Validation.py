@@ -46,3 +46,21 @@ def is_valid_date(text) -> bool:
                           r":1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|"
                           r"[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:"
                           r"0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/gm", text))
+
+def is_valid_username(text) -> bool:
+    """Checks if a string is a valid username"""
+    #Username musn't contain any special characters and is longer than 5 characters
+    return bool(re.search(r"^[a-zA-Z0-9_]{5,}$", text))
+
+def is_valid_password(text) -> bool:
+    """Checks if a string is a valid password"""
+    #password must be at least 5 characters long and contain at least one uppercase letter, one lowercase letter and one number
+    return bool(re.search(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{5,}$", text))
+
+if __name__ == "__main__":
+    print(is_valid_password("Password123"))  # True
+    print(is_valid_password("password123"))  # False
+    print(is_valid_password("Password"))  # False
+    print(is_valid_password("password")) # False
+    print(is_valid_password("Pass")) # False
+    print(is_valid_password("Pass1")) # True
