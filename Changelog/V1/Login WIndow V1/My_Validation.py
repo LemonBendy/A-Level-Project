@@ -49,7 +49,7 @@ def is_valid_date(text) -> bool:
 
 def is_valid_username(text) -> bool:
     """Checks if a string is a valid username"""
-    #Username musn't contain any special characters and is longer than 5 characters
+    #Username musn't contain any special characters and is 5 characters or more
     return bool(re.search(r"^[a-zA-Z0-9_]{5,}$", text))
 
 def is_valid_password(text) -> bool:
@@ -61,6 +61,5 @@ if __name__ == "__main__":
     print(is_valid_password("Password123"))  # True
     print(is_valid_password("password123"))  # False
     print(is_valid_password("Password"))  # False
-    print(is_valid_password("password")) # False
     print(is_valid_password("Pass")) # False
     print(is_valid_password("Pass1")) # True
