@@ -43,17 +43,11 @@ class DatabaseManager:
             FACE_NUM        INT                     NOT NULL
         )""")
 
-    def insert_data(username, password, admin_status=False):
-        try:
-            conn = sq.connect("Changelog/V1/Login WIndow V1/login.db")
-            c = conn.cursor()
-            c.execute("INSERT INTO login VALUES (?,?,?)", (username, password, admin_status))
-            conn.commit()
-            conn.close()
-        except Exception as e:
-            print(e)
-            return False
-        
+    def insert_data(self, username, password, admin_status=False, face_num=1) -> None:
+        """Inserts the data into the database"""
+        password = self.hash_function(password)
+        self.executeCommit("INSERT INTO login VALUES (?, ?, ?, ?)", (username, password, admin_status, face_num))
+
 
     def get_data(self, username: str) -> list[any]:
         """Gets the data from the database"""
@@ -80,8 +74,17 @@ class DatabaseManager:
         """Inserts the profile values into the database"""
         self.executeCommit("INSERT INTO profile VALUES (?) WHERE USERNAME=?", (face_num,), (username))
 
+    def hash_function(self, password: str) -> str:
+        """Hashes the password"""
+        return hash(password)
+    
+    def Delete(self, username: str) -> None:
+        """Deletes a user from the database"""
+        if self.executeCommit("DELETE FROM login WHERE USERNAME=?", (username,)):
+            messagebox.showinfo("Delete info", "Account deleted successfully")
 
 database = DatabaseManager()
+
 
 class LoginWindow:
     """Creates a window for the user to log in"""
@@ -117,22 +120,23 @@ class LoginWindow:
         Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).place(x=210, y=200)
 
 
+
     def login(self) -> None:
         """Checks the entered username and password against the database"""
         # Get username and password
         username = self.username.get()
         password = self.password.get()
+ 
         # Check if username and password is valid
-        if password != database.get_password(username):
-            messagebox.showerror("Error", "Invalid username or password")
-            return
-        # Check for admin status
-        if database.is_admin(username):
-            self.window.destroy()
-            AdminWindow(Tk(), "Tkinter Admin Form")
+        if str(database.hash_function(password)) == str(database.get_password(username)):
+            if database.is_admin(username):
+                self.window.destroy()
+                AdminWindow(Tk(), "Tkinter Admin Form")
+            else:
+                self.window.destroy()
+                VariableWindow(Tk(), "Tkinter Variable Form", username)
         else:
-            self.window.destroy()
-            VariableWindow(Tk(), "Tkinter Variable Form", username)
+            messagebox.showerror("Login info", "Invalid username or password")
 
 
     # Create a register function
@@ -178,7 +182,7 @@ class RegisterWindow:  # Create a register window
         # Get username and password
         username = self.username.get()
         password = self.password.get()
-        print(username, password)
+        password = database.hash_function(password)
 
         # Check if username and password is valid
 
@@ -218,6 +222,33 @@ class VariableWindow:
         process_video(face_num)
 
 
+class DeleteUserWindow:
+    def __init__(self, window, window_title):
+        """Initialise the delete window"""
+        self.window = window
+        self.window.title(window_title)
+        self.window.geometry("400x300")
+        #self.window.resizable(0, 0)
+        self.window.configure(bg="light blue")
+
+        # Create a delete form
+        Label(window, text="Please enter the username of the account you want to delete", bg="light blue").pack()
+        Label(window, text="", bg="light blue").pack()
+
+        # Username
+        Label(window, text="Username: ", bg="light blue").pack()
+        self.username = Entry(window)
+        self.username.pack()
+
+        Button(window, text="Delete", width=10, height=1, command=lambda: self.Delete(self.username.get())).pack()
+        Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).pack()
+
+    def Delete(self, username: str) -> None:
+        """Deletes the user"""
+        database.Delete(username)
+        self.window.destroy()
+
+
 class AdminWindow:
     """Shows a window with the admin specific UI"""
     def __init__(self, window, window_title):
@@ -243,7 +274,9 @@ class AdminWindow:
 
 
     def remove_account(self) -> None:
-        ...
+        """Shows the 'remove account' window"""
+        self.window.destroy()
+        DeleteUserWindow(Tk(), "Tkinter Delete Form")
 
 
 LoginWindow(Tk(), "Tkinter Login Form")
@@ -251,5 +284,8 @@ LoginWindow(Tk(), "Tkinter Login Form")
 # RegisterWindow(Tk(), "Tkinter Register Form")
 # AdminWindow(Tk(), "Tkinter Admin Form")
 mainloop()
+#create code to insert data into the database
+
+
 
 
