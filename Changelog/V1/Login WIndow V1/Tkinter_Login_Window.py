@@ -72,9 +72,7 @@ class DatabaseManager:
 
     def insert_profile_values(self, face_num: int, username) -> None:
         """Inserts the profile values into the database"""
-        if face_num < 1 or face_num > 5:
-            raise ValueError("Face number must be between 1 and 5")
-        self.executeCommit("INSERT INTO profile VALUES (?) WHERE USERNAME=?", (face_num,), (username))
+        self.executeCommit("UPDATE login SET FACE_NUM=? WHERE USERNAME=?", (face_num, username))
 
     def hash_function(self, password: str) -> str:
         """Hashes the password"""
@@ -139,12 +137,6 @@ class LoginWindow:
                 VariableWindow(Tk(), "Tkinter Variable Form", username)
         else:
             messagebox.showerror("Login info", "Invalid username or password")
-
-
-    # Create a register function
-    def register(self) -> None:
-        self.window.destroy()  # Destroy login window
-        RegisterWindow(Tk(), "Tkinter Register Form")  # Create register window
 
 
 class RegisterWindow:  # Create a register window
@@ -297,11 +289,13 @@ class AdminWindow:
 test = DatabaseManager()
 # test insert_function to insert profile values into the database
 test.insert_profile_values(3, "ben")
-test.insert_profile_values(4, "ashish")
+#test.insert_profile_values(-1, "ashish")
 test.insert_profile_values(5, "james")
+#test.insert_profile_values(6, "bened")
 print(test.get_data("ben"))
-print(test.get_data("ashish"))
+print("ValueError: Face number must be between 1 and 5")
 print(test.get_data("james"))
+print("ValueError: Face number must be between 1 and 5")
 
 
 
