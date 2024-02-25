@@ -285,24 +285,12 @@ class AdminWindow:
         DeleteUserWindow(Tk(), "Tkinter Delete Form")
 
 
-#LoginWindow(Tk(), "Tkinter Login Form")
+LoginWindow(Tk(), "Tkinter Login Form")
 # VariableWindow(Tk(), "Tkinter Variable Form", "ben")  #test variable window
 # RegisterWindow(Tk(), "Tkinter Register Form")
 # AdminWindow(Tk(), "Tkinter Admin Form")
-#mainloop()
+mainloop()
 #create code to insert data into the database
-
-test = DatabaseManager()
-# test insert_function to insert profile values into the database
-test.insert_profile_values(3, "ben")
-#test.insert_profile_values(-1, "ashish")
-test.insert_profile_values(5, "james")
-#test.insert_profile_values(6, "bened")
-print(test.get_data("ben"))
-print("ValueError: Face number must be between 1 and 5")
-print(test.get_data("james"))
-print("ValueError: Face number must be between 1 and 5")
-
 
 
 
