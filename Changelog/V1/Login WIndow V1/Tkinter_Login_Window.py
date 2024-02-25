@@ -176,6 +176,7 @@ class RegisterWindow:  # Create a register window
         # Get username and password
         username = self.username.get()
         password = self.password.get()
+        print(username, password)
         if not is_valid_username(username):
             messagebox.showerror("Register info", "Invalid username")
             return
@@ -183,6 +184,7 @@ class RegisterWindow:  # Create a register window
             messagebox.showerror("Register info", "Invalid password")
             return
         password = database.hash_function(password)
+        print(password)
 
         # Check if username and password is valid
 
@@ -249,7 +251,9 @@ class DeleteUserWindow:
 
     def Delete(self, username: str, usernameV: str) -> None:
         """Deletes the user"""
+        print(username, usernameV)
         if username == usernameV:
+            print(username, usernameV)
             database.Delete(username)
             self.window.destroy()
             messagebox.showinfo("User Deleted" f"User: {username}, has been deleted")
@@ -285,12 +289,16 @@ class AdminWindow:
         DeleteUserWindow(Tk(), "Tkinter Delete Form")
 
 
-LoginWindow(Tk(), "Tkinter Login Form")
+#LoginWindow(Tk(), "Tkinter Login Form")
 # VariableWindow(Tk(), "Tkinter Variable Form", "ben")  #test variable window
 # RegisterWindow(Tk(), "Tkinter Register Form")
 # AdminWindow(Tk(), "Tkinter Admin Form")
-mainloop()
+#mainloop()
 #create code to insert data into the database
+print("ben", "ben")
+print("ben", "ben")
+username = "ben"
+messagebox.showinfo("User Deleted" f"User: {username}, has been deleted")
 
 
 
