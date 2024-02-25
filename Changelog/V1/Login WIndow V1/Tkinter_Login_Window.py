@@ -240,13 +240,18 @@ class DeleteUserWindow:
         self.username = Entry(window)
         self.username.pack()
 
+        Label(window, text="Username Verification: ", bg="light blue").pack()
+        self.usernameV = Entry(window)
+        self.usernameV.pack()
+
         Button(window, text="Delete", width=10, height=1, command=lambda: self.Delete(self.username.get())).pack()
         Button(window, text="Exit", width=10, height=1, command=lambda: sys.exit()).pack()
 
-    def Delete(self, username: str) -> None:
+    def Delete(self, username: str, usernameV: str) -> None:
         """Deletes the user"""
-        database.Delete(username)
-        self.window.destroy()
+        if username == usernameV:
+            database.Delete(username)
+            self.window.destroy()
 
 
 class AdminWindow:
