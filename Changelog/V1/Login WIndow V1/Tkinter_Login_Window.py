@@ -252,6 +252,7 @@ class DeleteUserWindow:
         if username == usernameV:
             database.Delete(username)
             self.window.destroy()
+            messagebox.showinfo("User Deleted" f"User: {username}, has been deleted")
 
 
 class AdminWindow:
