@@ -257,6 +257,8 @@ class DeleteUserWindow:
             database.Delete(username)
             self.window.destroy()
             messagebox.showinfo("User Deleted" f"User: {username}, has been deleted")
+        else:
+            messagebox.showinfo("User not found", "User does not exist")
 
 
 class AdminWindow:
