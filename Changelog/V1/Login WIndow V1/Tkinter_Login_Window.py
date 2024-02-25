@@ -159,7 +159,7 @@ class RegisterWindow:  # Create a register window
 
         # Password
         Label(window, text="Password: ", bg="light blue").pack()  # Create a label for the password entry box
-        self.password = Entry(window, show="*")  # Create an entry box for the password
+        self.password = Entry(window)  # Create an entry box for the password
         self.password.pack()
 
         Label(window, text="", bg="light blue").pack()  # Create a space between the entry box and the login button
