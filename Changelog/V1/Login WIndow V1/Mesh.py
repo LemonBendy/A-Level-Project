@@ -6,7 +6,7 @@ import numpy as np
 
 # --------------------
 # Face Mesh Setup
-def mesh(face_num = 2, min_confidence = 0.5, max_confidence = 0.5):
+def mesh(face_num = 2, min_confidence = 0.3, max_confidence = 0.5):
     mp_drawing = mp.solutions.drawing_utils
     mp_drawing_styles = mp.solutions.drawing_styles
     mp_face_mesh = mp.solutions.face_mesh
